@@ -9,11 +9,8 @@ const options = {
       version: '1.0.0',
       description: 'A secure role-based API for Admin, Merchant, and Users with TronGrid integration',
     },
-    servers: [
-      {
-        url: 'http://localhost:5000',
-      },
-    ],
+    servers: [{ url: 'https://onlinetxmanag.onrender.com' }],
+    
     components: {
       securitySchemes: {
         bearerAuth: {

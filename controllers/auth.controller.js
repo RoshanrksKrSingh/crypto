@@ -116,16 +116,15 @@ if (user.role === 'merchant' && !user.isVerified) {
     const token = generateToken(user);
 
     return res.status(200).json({
-      message: 'Login successful',
-      token,
-      user: {
+        message: 'Login successful',token,
+        user: {
         id: user._id,
         email: user.email,
         role: user.role,
         firstName: user.firstName,
         lastName: user.lastName,
         phone: user.phone,
-      },
+       },
     });
   } catch (err) {
     console.error('Login Error:', err.message);
