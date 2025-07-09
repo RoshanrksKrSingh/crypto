@@ -11,6 +11,7 @@ const userRoutes = require('./routes/user.routes');
 const transactionRoutes = require('./routes/transaction.routes');
 const setupSwagger = require('./config/swagger');
 const { protect, adminOnly, merchantOnly } = require('./middlewares/auth.middleware');
+
 dotenv.config();
 
 const isProd = process.env.NODE_ENV === 'production';

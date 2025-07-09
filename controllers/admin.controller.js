@@ -74,7 +74,7 @@ exports.updateMerchant = async (req, res) => {
 exports.deleteMerchant = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Merchant deleted' });
+    res.json({ message: 'Merchant deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Error deleting merchant', error: err.message });
   }
