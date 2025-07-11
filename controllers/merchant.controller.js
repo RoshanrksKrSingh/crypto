@@ -97,6 +97,20 @@ exports.getUserById = async (req, res) => {
     res.status(500).json({ message: 'Error retrieving user', error: err.message });
   }
 };
+// Get all users created by this merchant
+exports.getAllUsersByMerchant = async (req, res) => {
+  try {
+    const users = await User.find({
+      merchantId: req.user._id,
+      role: 'user',
+    });
+
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch users', error: err.message });
+  }
+};
+
 exports.getMerchantUserTransactions = async (req, res) => {
   try {
     // Find all users created by this merchant

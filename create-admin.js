@@ -7,8 +7,17 @@ dotenv.config();
 
 mongoose.connect(process.env.MONGO_URI).then(async () => {
   const hashedPassword = await bcrypt.hash('admin@123', 10);
+
+  const existingAdmin = await User.findOne({ email: 'roshankrsingh95@gmail.com' });
+  if (existingAdmin) {
+    console.log('Admin already exists.');
+    process.exit();
+    return;
+  }
+
   const admin = new User({
-    name: 'Roshan Singh',
+    firstName: 'Roshan',
+    lastName: 'Singh',
     email: 'roshankrsingh95@gmail.com',
     password: hashedPassword,
     role: 'admin',
@@ -16,6 +25,9 @@ mongoose.connect(process.env.MONGO_URI).then(async () => {
   });
 
   await admin.save();
-  console.log('Admin created');
+  console.log('Admin created successfully');
   process.exit();
+}).catch(err => {
+  console.error('Failed to connect or create admin:', err.message);
+  process.exit(1);
 });

@@ -69,7 +69,7 @@ router.post('/create-user', protect, merchantOnly, merchantController.createUser
  *             properties:
  *               firstName:
  *                 type: string
- *               laststName:
+ *               lastName:
  *                 type: string
  *               email:
  *                 type: string
@@ -79,7 +79,7 @@ router.post('/create-user', protect, merchantOnly, merchantController.createUser
  *                 type: string
  *     responses:
  *       200:
- *         description: User updated sucessfully
+ *         description: User updated successfully
  */
 router.put('/update-user/:id', protect, merchantOnly, merchantController.updateUser);
 
@@ -136,5 +136,38 @@ router.get('/get-user/:id', protect, merchantOnly, merchantController.getUserByI
  *         description: List of transactions
  */
 router.get('/user-transactions', protect, merchantOnly, merchantController.getMerchantUserTransactions);
+
+/**
+ * @swagger
+ * /api/merchant/users:
+ *   get:
+ *     summary: Get all users created by the current merchant
+ *     tags: [Merchant]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of users created by this merchant
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   firstName:
+ *                     type: string
+ *                   lastName:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                   phone:
+ *                     type: string
+ *                   merchantId:
+ *                     type: string
+ */
+router.get('/users', protect, merchantOnly, merchantController.getAllUsersByMerchant);
 
 module.exports = router;
