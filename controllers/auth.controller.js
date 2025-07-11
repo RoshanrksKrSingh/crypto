@@ -116,16 +116,13 @@ if (user.role === 'merchant' && !user.isVerified) {
     const token = generateToken(user);
 
     return res.status(200).json({
-        message: 'Login successful',token,
-        user: {
-        id: user._id,
-        email: user.email,
-        role: user.role,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phone: user.phone,
-       },
-    });
+  message: 'Login successful',
+  token,
+  role: user.role,
+  name: `${user.firstName} ${user.lastName}`,
+  email: user.email,
+  id: user._id,
+});
   } catch (err) {
     console.error('Login Error:', err.message);
     return res.status(500).json({ message: 'Internal server error' });
