@@ -6,6 +6,7 @@ const { JWT_SECRET } = require('../config/jwt');
 exports.protect = async (req, res, next) => {
   let token;
 
+  // Extract token from Authorization header
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer ')
@@ -18,6 +19,7 @@ exports.protect = async (req, res, next) => {
   }
 
   try {
+    // Decode token
     const decoded = jwt.verify(token, JWT_SECRET);
     const user = await User.findById(decoded.id);
 
@@ -25,25 +27,30 @@ exports.protect = async (req, res, next) => {
       return res.status(401).json({ message: 'Not authorized, user not found' });
     }
 
+    // Optional: Debug logging (remove in production)
+    console.log(`[AUTH] User authenticated: ${user.email} | Role: ${user.role}`);
+
     req.user = user;
     next();
   } catch (err) {
-    console.error('Auth error:', err.message);
-    res.status(401).json({ message: 'Token invalid or expired' });
+    console.error('[AUTH] Token error:', err.message);
+    return res.status(401).json({ message: 'Token invalid or expired' });
   }
 };
 
-// Admin only access
+// Middleware: Admin only
 exports.adminOnly = (req, res, next) => {
-  if (req.user.role !== 'admin') {
+  if (req.user?.role !== 'admin') {
+    console.warn(`[AUTH] Access denied for user ${req.user?.email}. Admins only.`);
     return res.status(403).json({ message: 'Access denied: Admins only' });
   }
   next();
 };
 
-// Merchant only access
+// Middleware: Merchant only
 exports.merchantOnly = (req, res, next) => {
-  if (req.user.role !== 'merchant') {
+  if (req.user?.role !== 'merchant') {
+    console.warn(`[AUTH] Access denied for user ${req.user?.email}. Merchants only.`);
     return res.status(403).json({ message: 'Access denied: Merchants only' });
   }
   next();
