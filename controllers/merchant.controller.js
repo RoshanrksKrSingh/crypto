@@ -118,8 +118,9 @@ exports.getMerchantUserTransactions = async (req, res) => {
     const userIds = users.map(u => u._id);
 
     // Find all transactions made by own users
-    const transactions = await Transaction.find({ userId: { $in: userIds } });
-
+    // Example controller for fetching user transactions (used by Merchant)
+    const transactions = await Transaction.find({ merchantId: req.user._id })
+     .populate('userId', 'firstName lastName email') .sort({ createdAt: -1 });
     res.json(transactions);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch transactions' });
