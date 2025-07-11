@@ -122,21 +122,6 @@ router.delete('/delete-user/:id', protect, merchantOnly, merchantController.dele
  *         description: User data
  */
 router.get('/get-user/:id', protect, merchantOnly, merchantController.getUserById);
-
-/**
- * @swagger
- * /api/merchant/user-transactions:
- *   get:
- *     summary: Get all transactions of users created by this merchant
- *     tags: [Merchant]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: List of transactions
- */
-router.get('/user-transactions', protect, merchantOnly, merchantController.getMerchantUserTransactions);
-
 /**
  * @swagger
  * /api/merchant/users:
@@ -169,5 +154,17 @@ router.get('/user-transactions', protect, merchantOnly, merchantController.getMe
  *                     type: string
  */
 router.get('/users', protect, merchantOnly, merchantController.getAllUsersByMerchant);
-
+/**
+ * @swagger
+ * /api/merchant/user-transactions:
+ *   get:
+ *     summary: Get all transactions of users created by this merchant
+ *     tags: [Merchant]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of transactions
+ */
+router.get('/user-transactions', protect, merchantOnly, merchantController.getMerchantUserTransactions);
 module.exports = router;
