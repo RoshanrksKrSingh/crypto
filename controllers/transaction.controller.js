@@ -1,5 +1,6 @@
 const Transaction = require('../models/Transaction');
 const { verifyTronTransaction } = require('../services/cryptoPayment');
+const User = require('../models/User');
 
 exports.createTransaction = async (req, res) => {
   try {
@@ -7,9 +8,13 @@ exports.createTransaction = async (req, res) => {
       return res.status(401).json({ message: 'Unauthorized: user not found in request' });
     }
 
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
     const trx = await Transaction.create({
       ...req.body,
-      userId: req.user._id,
+      userId: user._id,
+      merchantId: user.merchantId || null
     });
 
     res.status(201).json({ message: 'Transaction created successfully', transaction: trx });
@@ -44,7 +49,7 @@ exports.getTransactions = async (req, res) => {
 
 exports.getAllTransactions = async (req, res) => {
   try {
-    const txns = await Transaction.find().populate('userId', 'name email role');
+    const txns = await Transaction.find().populate('userId', 'firstName lastName email role');
     res.json(txns);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch all transactions', error: err.message });

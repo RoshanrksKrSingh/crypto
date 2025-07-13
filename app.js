@@ -18,6 +18,10 @@ const isProd = process.env.NODE_ENV === 'production';
 const app = express();
 
 // Middlewares
+// const corsOptions = {
+//   origin: ['http://localhost:3000', 'https://onlinetxmanag.onrender.com'], 
+//   credentials: true,
+// };
 app.use(cors());
 app.use(express.json());
 

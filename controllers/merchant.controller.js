@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const Transaction = require('../models/Transaction');
+const mongoose = require('mongoose'); 
 
 /**
  * Create user by merchant or admin
@@ -110,18 +111,22 @@ exports.getAllUsersByMerchant = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch users', error: err.message });
   }
 };
-
 exports.getMerchantUserTransactions = async (req, res) => {
   try {
-    // Find all users created by this merchant
-    const users = await User.find({ merchantId: req.user._id }).select('_id');
+    const merchantId = req.user._id;
+
+    // Make sure merchant exists and is logged in
+    const users = await User.find({ merchantId: merchantId }).select('_id');
     const userIds = users.map(u => u._id);
 
-    // Find all transactions made by own users
-    const transactions = await Transaction.find({ merchantId: req.user._id })
-     .populate('userId', 'firstName lastName email') .sort({ createdAt: -1 });
+    // Fetch transactions of users under this merchant
+    const transactions = await Transaction.find({ userId: { $in: userIds } })
+      .populate('userId', 'firstName lastName email')
+      .sort({ createdAt: -1 });
+
     res.json(transactions);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch transactions' });
+    console.error('Error in getMerchantUserTransactions:', err);
+    res.status(500).json({ message: 'Failed to fetch transactions', error: err.message });
   }
 };
