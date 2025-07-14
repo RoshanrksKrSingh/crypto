@@ -20,7 +20,7 @@ const isProd = process.env.NODE_ENV === 'production';
 //  CORS CONFIG for local frontend (Vite: http://localhost:5173) & deployed frontend
 const corsOptions = {
   origin: isProd
-    ? ['https://frontend.onrender.com'] 
+    ? ['https://localhost:5000/'] 
     : ['http://localhost:5173'],
   credentials: true,
 };
