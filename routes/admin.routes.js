@@ -229,7 +229,21 @@ router.delete('/delete-user/:id', protect, adminOnly, adminController.deleteUser
  *         description: Unauthorized
  */
 router.get('/users', protect, adminOnly, adminController.getAllUsers);
-
+/**
+ * @swagger
+ * /api/admin/transactions:
+ *   get:
+ *     summary: Get all transactions
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of all transactions
+ *       500:
+ *         description: Server error
+ */
+router.get('/transactions', protect, adminOnly, adminController.getAllTransactions);
 /**
  * @swagger
  * /api/admin/transactions/filter:
