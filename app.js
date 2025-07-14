@@ -39,7 +39,7 @@ app.use(
     store: MongoStore.create({
       mongoUrl: process.env.MONGO_URI,
       collectionName: 'sessions',
-      ttl: 60 * 60 * 24, // ⏳ 24-hour session persistence
+      ttl: 60 * 60 * 24, // 24hour session persistence
     }),
     cookie: {
       httpOnly: true,
