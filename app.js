@@ -1,69 +1,3 @@
-// const express = require('express');
-// const session = require('express-session');
-// const MongoStore = require('connect-mongo');
-// const cors = require('cors');
-// const dotenv = require('dotenv');
-// const authRoutes = require('./routes/auth.routes');
-// const adminRoutes = require('./routes/admin.routes');
-// const merchantRoutes = require('./routes/merchant.routes');
-// const userRoutes = require('./routes/user.routes');
-// const transactionRoutes = require('./routes/transaction.routes');
-// const setupSwagger = require('./config/swagger');
-// const { protect, adminOnly, merchantOnly } = require('./middlewares/auth.middleware');
-
-// dotenv.config();
-
-// const app = express();
-// const isProd = process.env.NODE_ENV === 'production';
-
-// // CORS CONFIG allow frontend & Swagger UI to access backend
-// const corsOptions = {
-//   origin: isProd
-//     ? ['https://onlinetxmanag.onrender.com', 'https://studio.apicur.io'] 
-//     : ['http://localhost:5173'], 
-//   credentials: true, 
-// };
-
-// app.use(cors(corsOptions));
-// app.use(express.json());
-
-// // Swagger Docs
-// setupSwagger(app);
-
-// // Session setup - store login sessions in MongoDB
-// app.use(
-//   session({
-//     secret: process.env.SESSION_SECRET || 'your-secret-key',
-//     resave: false,
-//     saveUninitialized: false,
-//     store: MongoStore.create({
-//       mongoUrl: process.env.MONGO_URI,
-//       collectionName: 'sessions',
-//       ttl: 60 * 60, 
-//     }),
-//     cookie: {
-//       httpOnly: true,
-//       secure: isProd, // cookie only sent over HTTPS in production
-//       sameSite: isProd ? 'none' : 'lax', // allow cross-origin
-//       maxAge: 60 * 60 * 1000, // 1 hour
-//     },
-//   })
-// );
-
-// // Routes
-// app.use('/api/auth', authRoutes);
-// app.use('/api/admin', protect, adminOnly, adminRoutes);
-// app.use('/api/merchant', protect, merchantOnly, merchantRoutes);
-// app.use('/api/user', protect, userRoutes);
-// app.use('/api/transactions', protect, transactionRoutes);
-
-// // Health check
-// app.get('/', (req, res) => {
-//   res.send('Role-Based API with TronGrid is running.');
-// });
-
-// module.exports = app;
-
 const express = require('express');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
@@ -79,49 +13,116 @@ const { protect, adminOnly, merchantOnly } = require('./middlewares/auth.middlew
 
 dotenv.config();
 
-const isProd = process.env.NODE_ENV === 'production';
 const app = express();
+const isProd = process.env.NODE_ENV === 'production';
 
-// Middlewares
-// const corsOptions = {
-//   origin: ['http://localhost:3000', 'https://onlinetxmanag.onrender.com'], 
-//   credentials: true,
-// };
-app.use(cors());
+// CORS config: Allow localhost & Render frontend
+const corsOptions = {
+  origin: [
+    'http://localhost:5173',
+    'https://onlinetxmanag.onrender.com',
+    'https://studio.apicur.io'
+  ],
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
-// Swagger Docs
 setupSwagger(app);
 
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,
-    collectionName: 'sessions',
-    ttl: 60 * 10
-  }),
-  cookie: {
-    httpOnly: true,
-    secure: isProd,                  
-    sameSite: isProd ? 'none' : 'lax', 
-    maxAge: 10 * 60 * 1000
-  }
-}));
-// Public authentication routes
-app.use('/api/auth', authRoutes); 
+// Sessions via MongoDB
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+      collectionName: 'sessions',
+      ttl: 60 * 60 * 24, // ⏳ 24-hour session persistence
+    }),
+    cookie: {
+      httpOnly: true,
+      secure: isProd, // only over HTTPS in production
+      sameSite: isProd ? 'none' : 'lax',
+      maxAge: 60 * 60 * 1000, // 1 hour cookie
+    },
+  })
+);
 
-// Protected Role-Based Routes
+// Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/admin', protect, adminOnly, adminRoutes);
 app.use('/api/merchant', protect, merchantOnly, merchantRoutes);
 app.use('/api/user', protect, userRoutes);
-app.use('/api/transactions', protect, transactionRoutes); // Any role can use this
+app.use('/api/transactions', protect, transactionRoutes);
 
-
-// Health check route
+//Health Check
 app.get('/', (req, res) => {
   res.send('Role-Based API with TronGrid is running.');
 });
 
 module.exports = app;
+
+
+// const express = require('express');
+// const session = require('express-session');
+// const MongoStore = require('connect-mongo');
+// const cors = require('cors');
+// const dotenv = require('dotenv');
+// const authRoutes = require('./routes/auth.routes');
+// const adminRoutes = require('./routes/admin.routes');
+// const merchantRoutes = require('./routes/merchant.routes');
+// const userRoutes = require('./routes/user.routes');
+// const transactionRoutes = require('./routes/transaction.routes');
+// const setupSwagger = require('./config/swagger');
+// const { protect, adminOnly, merchantOnly } = require('./middlewares/auth.middleware');
+
+// dotenv.config();
+
+// const isProd = process.env.NODE_ENV === 'production';
+// const app = express();
+
+// // Middlewares
+// // const corsOptions = {
+// //   origin: ['http://localhost:3000', 'https://onlinetxmanag.onrender.com'], 
+// //   credentials: true,
+// // };
+// app.use(cors());
+// app.use(express.json());
+
+// // Swagger Docs
+// setupSwagger(app);
+
+// app.use(session({
+//   secret: process.env.SESSION_SECRET || 'your-secret-key',
+//   resave: false,
+//   saveUninitialized: false,
+//   store: MongoStore.create({
+//     mongoUrl: process.env.MONGO_URI,
+//     collectionName: 'sessions',
+//     ttl: 60 * 10
+//   }),
+//   cookie: {
+//     httpOnly: true,
+//     secure: isProd,                  
+//     sameSite: isProd ? 'none' : 'lax', 
+//     maxAge: 10 * 60 * 1000
+//   }
+// }));
+// // Public authentication routes
+// app.use('/api/auth', authRoutes); 
+
+// // Protected Role-Based Routes
+// app.use('/api/admin', protect, adminOnly, adminRoutes);
+// app.use('/api/merchant', protect, merchantOnly, merchantRoutes);
+// app.use('/api/user', protect, userRoutes);
+// app.use('/api/transactions', protect, transactionRoutes); // Any role can use this
+
+
+// // Health check route
+// app.get('/', (req, res) => {
+//   res.send('Role-Based API with TronGrid is running.');
+// });
+
+// module.exports = app;
