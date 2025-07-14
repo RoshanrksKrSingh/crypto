@@ -14,24 +14,23 @@ const { protect, adminOnly, merchantOnly } = require('./middlewares/auth.middlew
 dotenv.config();
 
 const app = express();
-
 const isProd = process.env.NODE_ENV === 'production';
 
-//  CORS CONFIG for local frontend (Vite: http://localhost:5173) & deployed frontend
+// CORS CONFIG allow frontend & Swagger UI to access backend
 const corsOptions = {
   origin: isProd
-    ? ['https://localhost:5000/'] 
-    : ['http://localhost:5173'],
-  credentials: true,
+    ? ['https://onlinetxmanag.onrender.com', 'https://studio.apicur.io'] 
+    : ['http://localhost:5173'], 
+  credentials: true, 
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Swagger setup
+// Swagger Docs
 setupSwagger(app);
 
-// SESSION CONFIG
+// Session setup - store login sessions in MongoDB
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'your-secret-key',
@@ -44,8 +43,8 @@ app.use(
     }),
     cookie: {
       httpOnly: true,
-      secure: isProd, // Secure cookies only in production (Render = true)
-      sameSite: isProd ? 'none' : 'lax', // allow cross-origin cookies 
+      secure: isProd, // cookie only sent over HTTPS in production
+      sameSite: isProd ? 'none' : 'lax', // allow cross-origin
       maxAge: 60 * 60 * 1000, // 1 hour
     },
   })
@@ -58,7 +57,7 @@ app.use('/api/merchant', protect, merchantOnly, merchantRoutes);
 app.use('/api/user', protect, userRoutes);
 app.use('/api/transactions', protect, transactionRoutes);
 
-//  Health check
+// Health check
 app.get('/', (req, res) => {
   res.send('Role-Based API with TronGrid is running.');
 });
